@@ -18,28 +18,8 @@ def search_for_magic(filename, start_line, magic_string):
 
 
 def watch_directory(path, magic_string, extension, interval):
-    file_holder = {}
-    exit = False
-    while not exit:
-        time.sleep(interval)
-        if os.path.isdir(path):
-            file_list = os.listdir(path)
-            for files in file_list:
-                if files.endswith(extension) and files not in file_holder:
-                    file_holder[files] = 0
-                    logging.info(f'file added {files}')
-            key = list(file_holder.keys())
-            for k in key:
-                if k not in file_list:
-                    print(f'This file has been removed {k}')
-                    file_holder.pop(k)
-            for key, value in file_holder.items():
-                file_holder[key] = search_for_magic(
-                    f'{path}/{key}', value, magic_string)
-            print(file_holder)
-        else:
-            logging.error(f'{path} directory not found.')
-            file_holder = {}
+    # Your code here
+    return
 
 
 def create_parser():
