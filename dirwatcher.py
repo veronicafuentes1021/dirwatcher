@@ -7,6 +7,7 @@ __author__ = 'Veronica Fuentes'
 
 import sys
 from datetime import time
+import datetime
 import os
 import logging
 import argparse
@@ -95,7 +96,7 @@ def main(args):
         except Exception as e:
             logger.error('Unhandled exception:{}'.format(e))
         time.sleep(args.int)
-    uptime = datetime.datetime.now()-start_time
+    total = datetime.datetime.now()-start_time
 
 
 if __name__ == '__main__':
