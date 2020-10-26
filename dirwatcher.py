@@ -72,14 +72,30 @@ def signal_handler(sig_num, frame):
 
 
 def main(args):
+    logging.basicConfig(
+        format='%(asctime)s.%(msecs)03d %(name)-12s %(levelname)-8s'
+        '[%(threadName)-12s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    logger.setLevel(logging.DEBUG)
+    start_time = datetime.datetime.now()
+
     parser = create_parser()
     args = parser.parse_args()
     print(args)
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-    global exit_flag
     while not exit_flag:
-        return
+        try:
+            watch_directory(args.dir, args.magic, args.ext, args.int)
+        except OSError:
+            logger.error('Directory {} does not exist'.format(args.dir))
+            # logger.error(e)
+            time.sleep(args.int * 2)
+        except Exception as e:
+            logger.error('Unhandled exception:{}'.format(e))
+        time.sleep(args.int)
+    uptime = datetime.datetime.now()-start_time
 
 
 if __name__ == '__main__':
