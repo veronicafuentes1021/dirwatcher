@@ -10,6 +10,13 @@ from datetime import time
 import os
 import logging
 import argparse
+import signal
+
+
+exit_flag = False
+filesfound = []
+magic_word_pos = {}
+logger = logging.getLogger(__file__)
 
 
 def search_for_magic(filename, start_line, magic_string):
@@ -19,7 +26,7 @@ def search_for_magic(filename, start_line, magic_string):
 
 def watch_directory(path, magic_string, extension, interval):
     file_holder = {}
-    exit_flag = False
+    global exit_flag
     while not exit_flag:
         time.sleep(interval)
         if os.path.isdir(path):
@@ -61,13 +68,15 @@ def create_parser():
 
 
 def signal_handler(sig_num, frame):
-    # Your code here
-    return
+    logger.warn('Received ' + signal.Signals(sig_num).name)
 
 
 def main(args):
-    # Your code here
-    return
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    global exit_flag
+    while not exit_flag:
+        return
 
 
 if __name__ == '__main__':
