@@ -72,6 +72,9 @@ def signal_handler(sig_num, frame):
 
 
 def main(args):
+    parser = create_parser()
+    args = parser.parse_args()
+    print(args)
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     global exit_flag
