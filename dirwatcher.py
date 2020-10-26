@@ -54,17 +54,17 @@ def create_parser():
     parser = argparse.ArgumentParser(
         description='Watches specified directory for a specific input.')
     parser.add_argument(
-        'directory',
+        '-d', '--dir', type=str
         help='directory to watch')
     parser.add_argument(
         'input',
-        help='input to scan directory for')
+        help='input to watch directory for')
     parser.add_arguemnt(
-        '-e', '--extension',
+        '-e', '--ext', type=str
         help='file extention to search', default='.txt')
     parser.add_arguemnt(
         '-i', '--interval',
-        help='poll int, defaults to 1 sec', type=float, default=1.0)
+        help='poll interval, defaults to 1 sec', type=float, default=1.0)
     return parser
 
 
@@ -81,11 +81,21 @@ def main(args):
     logger.setLevel(logging.DEBUG)
     start_time = datetime.datetime.now()
 
+    logger.info(
+        '\n'
+        '-------------------------------------------------------------------\n'
+        '    Running {0}\n'
+        '    Started on {1}\n'
+        '-------------------------------------------------------------------\n'
+        .format(__file__, start_time.isoformat())
+    )
+
     parser = create_parser()
     args = parser.parse_args()
     print(args)
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
+
     while not exit_flag:
         try:
             watch_directory(args.dir, args.magic, args.ext, args.int)
@@ -97,6 +107,15 @@ def main(args):
             logger.error('Unhandled exception:{}'.format(e))
         time.sleep(args.int)
     total = datetime.datetime.now()-start_time
+
+    logger.info(
+        '\n'
+        '-------------------------------------------------------------------\n'
+        '    Stopped {0}\n'
+        '    Total time was {1}\n'
+        '-------------------------------------------------------------------\n'
+        .format(__file__, str(Total))
+    )
 
 
 if __name__ == '__main__':
