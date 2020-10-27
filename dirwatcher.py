@@ -6,7 +6,8 @@ Dirwatcher - A long-running program
 __author__ = 'Veronica Fuentes'
 
 import sys
-from datetime import time
+import signal
+import time
 import datetime
 import os
 import logging
@@ -16,38 +17,38 @@ import signal
 
 exit_flag = False
 filesfound = []
-magic_word_pos = {}
+magic_word_position = {}
 logger = logging.getLogger(__file__)
 
 
-def search_for_magic(filename, start_line, magic_string):
-    # Your code here
-    return
+def search_for_magic(path, filename, start_line, magic_string):
+    global magic_word_pos
+    with open(path + '/' + filename) as f:
+        for i, line in enumerate(f.readlines(), 1):
+            if magic_string in line and i > magic_word_pos[filename]:
+                logger.info('Woohoo! Magic word {} on line {} in file {}'
+                            .format(magic_string, i, filename))
+            if i > magic_word_pos[filename]:
+                magic_word_pos[filename] += 1
 
 
 def watch_directory(path, magic_string, extension, interval):
-    file_holder = {}
-    global exit_flag
-    while not exit_flag:
-        time.sleep(interval)
-        if os.path.isdir(path):
-            file_list = os.listdir(path)
-            for files in file_list:
-                if files.endswith(extension) and files not in file_holder:
-                    file_holder[files] = 0
-                    logging.info(f'file added {files}')
-            key = list(file_holder.keys())
-            for char in key:
-                if char not in file_list:
-                    print(f'This file has been removed {char}')
-                    file_holder.pop(char)
-            for key, value in file_holder.items():
-                file_holder[key] = search_for_magic(
-                    f'{path}/{key}', value, magic_string)
-            print(file_holder)
-        else:
-            logging.error(f'{path} directory not found.')
-            file_holder = {}
+    global filesfound
+    global magic_word_pos
+    logger.info('Watching dir {}, magic string: {}, extension: {},interval: {}'
+                .format(path, magic_string, extension, interval))
+    directory = os.path.abspath(path)
+    file_in_dir = os.listdir(directory)
+    for f in file_in_dir:
+        if f.endswith(extension) and f not in filesfound:
+            logger.info('new file: {} found in {}'.format(f, path))
+            filesfound.append(f)
+            magic_word_pos[f] = 0
+    for f in filesfound:
+        if f not in file_in_dir:
+            logger.info('file {} not found in {}'.format(f, path))
+    for f in filesfound:
+        search_for_magic(path, f, 0, magic_string)
 
 
 def create_parser():
