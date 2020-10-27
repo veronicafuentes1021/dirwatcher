@@ -69,8 +69,13 @@ def create_parser():
 
 
 def signal_handler(sig_num, frame):
-    logger.warn('Received ' + signal.Signals(sig_num).name)
-
+    global exit_flag
+    signals = dict((k, v) for v, k in reversed(sorted(signal.__dict__.items()))
+                   if v.startswith('SIG') and not v.startswith('SIG_'))
+    logger.warn('Received ' + signals[sig_num]
+    if sig_num == signal.SIGINT or signal.SIGTERM:
+        exit_flag = True
+    return
 
 def main(args):
     logging.basicConfig(
