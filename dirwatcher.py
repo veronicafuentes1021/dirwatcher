@@ -12,7 +12,6 @@ import datetime
 import os
 import logging
 import argparse
-import signal
 
 
 exit_flag = False
@@ -52,20 +51,13 @@ def watch_directory(path, magic_string, extension, interval):
 
 
 def create_parser():
-    parser = argparse.ArgumentParser(
-        description='Watches specified directory for a specific input.')
-    parser.add_argument(
-        '-d', '--dir', type=str
-        help='directory to watch')
-    parser.add_argument(
-        'input',
-        help='input to watch directory for')
-    parser.add_arguemnt(
-        '-e', '--ext', type=str
-        help='file extention to search', default='.txt')
-    parser.add_arguemnt(
-        '-i', '--interval',
-        help='poll interval, defaults to 1 sec', type=float, default=1.0)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--dir', type=str, help="directory to watch")
+    parser.add_argument('input', help='input to watch directory for')
+    parser.add_argument('-e', '--ext', type=str, default='.txt',
+                        help="file extension to search for")
+    parser.add_argument('-i', '--int', type=float, default=1,
+                        help='polling interval')
     return parser
 
 
@@ -73,10 +65,11 @@ def signal_handler(sig_num, frame):
     global exit_flag
     signals = dict((k, v) for v, k in reversed(sorted(signal.__dict__.items()))
                    if v.startswith('SIG') and not v.startswith('SIG_'))
-    logger.warn('Received ' + signals[sig_num]
+    logger.warn('Received ' + signals[sig_num])
     if sig_num == signal.SIGINT or signal.SIGTERM:
         exit_flag = True
     return
+
 
 def main(args):
     logging.basicConfig(
@@ -120,7 +113,7 @@ def main(args):
         '    Stopped {0}\n'
         '    Total time was {1}\n'
         '-------------------------------------------------------------------\n'
-        .format(__file__, str(Total))
+        .format(__file__, str(total))
     )
 
 
