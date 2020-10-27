@@ -25,7 +25,7 @@ def search_for_magic(path, filename, start_line, magic_string):
     with open(path + '/' + filename) as f:
         for i, line in enumerate(f.readlines(), 1):
             if magic_string in line and i > magic_word_pos[filename]:
-                logger.info('Woohoo! Magic word {} on line {} in file {}'
+                logger.info('Magic word {} on line {} in file {}'
                             .format(magic_string, i, filename))
             if i > magic_word_pos[filename]:
                 magic_word_pos[filename] += 1
