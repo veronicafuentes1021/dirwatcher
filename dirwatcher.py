@@ -21,19 +21,19 @@ logger = logging.getLogger(__file__)
 
 
 def search_for_magic(path, filename, start_line, magic_string):
-    global magic_word_pos
+    global magic_word_position
     with open(path + '/' + filename) as f:
         for i, line in enumerate(f.readlines(), 1):
-            if magic_string in line and i > magic_word_pos[filename]:
+            if magic_string in line and i > magic_word_position[filename]:
                 logger.info('Magic word {} on line {} in file {}'
                             .format(magic_string, i, filename))
-            if i > magic_word_pos[filename]:
-                magic_word_pos[filename] += 1
+            if i > magic_word_position[filename]:
+                magic_word_position[filename] += 1
 
 
 def watch_directory(path, magic_string, extension, interval):
     global filesfound
-    global magic_word_pos
+    global magic_word_position
     logger.info('Watching dir {}, magic string: {}, extension: {},interval: {}'
                 .format(path, magic_string, extension, interval))
     directory = os.path.abspath(path)
@@ -42,7 +42,7 @@ def watch_directory(path, magic_string, extension, interval):
         if f.endswith(extension) and f not in filesfound:
             logger.info('new file: {} found in {}'.format(f, path))
             filesfound.append(f)
-            magic_word_pos[f] = 0
+            magic_word_position[f] = 0
     for f in filesfound:
         if f not in file_in_dir:
             logger.info('file {} not found in {}'.format(f, path))
@@ -53,11 +53,11 @@ def watch_directory(path, magic_string, extension, interval):
 def create_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--dir', type=str, help="directory to watch")
-    parser.add_argument('input', help='input to watch directory for')
     parser.add_argument('-e', '--ext', type=str, default='.txt',
                         help="file extension to search for")
     parser.add_argument('-i', '--int', type=float, default=1,
                         help='polling interval')
+    parser.add_argument('-magic', help='magic text to watch for')
     return parser
 
 
@@ -81,12 +81,11 @@ def main(args):
     start_time = datetime.datetime.now()
 
     logger.info(
-        '\n'
-        '-------------------------------------------------------------------\n'
-        '    Running {0}\n'
-        '    Started on {1}\n'
-        '-------------------------------------------------------------------\n'
-        .format(__file__, start_time.isoformat())
+        '\n' +
+        '-' * 80 +
+        f'\n\tRunning {__file__}\n' +
+        f'\nStarted on{start_time.isoformat()}\n' +
+        '-' * 80
     )
 
     parser = create_parser()
@@ -108,12 +107,11 @@ def main(args):
     total = datetime.datetime.now()-start_time
 
     logger.info(
-        '\n'
-        '-------------------------------------------------------------------\n'
-        '    Stopped {0}\n'
-        '    Total time was {1}\n'
-        '-------------------------------------------------------------------\n'
-        .format(__file__, str(total))
+        '\n' +
+        '-' * 80 +
+        f'\n\tRunning {__file__}\n' +
+        f'\nStarted on{str(total)}\n' +
+        '-' * 80
     )
 
 
